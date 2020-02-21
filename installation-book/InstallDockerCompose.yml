@@ -1,8 +1,15 @@
 - hosts: deploynode
   remote_user: root
+  gather_facts: no
   vars:
     docker_compose_path: /usr/local/bin/docker-compose
   tasks:
+    - name: Gather Ansible Facts
+      setup:
+        filter: "{{ item }}"
+      loop:
+        - "ansible_architecture"
+        - "ansible_system"
     - name: Check is docker_compose Installed 
       command: docker-compose --version
       register: dc_version
