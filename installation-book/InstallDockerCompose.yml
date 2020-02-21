@@ -1,0 +1,28 @@
+- hosts: deploynode
+  remote_user: root
+  vars:
+    docker_compose_path: /usr/local/bin/docker-compose
+  tasks:
+    - name: Check is docker_compose Installed 
+      command: docker-compose --version
+      register: dc_version
+      failed_when: false
+      changed_when: false
+    - name: Output docker_compose Version
+      debug:
+        var: dc_version
+    - block:
+        - name: Install Docker Compose Binary if not installed
+          get_url:
+            url: "https://github.com/docker/compose/releases/download/1.25.4/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}" 
+            dest: "{{ docker_compose_path }}"
+          register: install_process
+          when: " dc_version.rc != 0 "
+        - name: Output Installation Process
+          debug:
+            var: install_process
+        - name: Change file mode
+          file:
+            path: "{{ docker_compose_path }}"
+            mode: 0755
+      when: " dc_version.rc != 0 "

@@ -1,0 +1,12 @@
+- hosts: nodes
+  remote_user: root
+  gather_facts: no
+  tasks:
+    - name: ls content of root directory
+      register: stdout
+      shell:
+        cmd: ls
+        chdir: /root
+    - name: out put ls result
+      debug:
+        var: stdout.stdout_lines
